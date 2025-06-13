@@ -1,22 +1,29 @@
 
 const map = L.map('map').setView([16.85, -99.9], 10);
 
+// Capas base confiables
 const baseLayers = {
   "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }),
-  "Satélite": L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'),
-  "Oscuro": L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_dark/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; Stadia Maps'
+  "Satélite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri'
+  }),
+  "Oscuro": L.tileLayer('https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; CartoDB'
   })
 };
+
+// Añadir capa base inicial
 baseLayers["OpenStreetMap"].addTo(map);
 
+// Icono personalizado
 const iconRefugio = L.icon({
   iconUrl: 'family.svg',
   iconSize: [25, 25]
 });
 
+// Capas temáticas
 const refugiosLayer = L.layerGroup().addTo(map);
 const cipLayer = L.layerGroup().addTo(map);
 
@@ -24,8 +31,11 @@ const overlays = {
   "Refugios temporales": refugiosLayer,
   "Delimitación CIP Acapulco-Coyuca": cipLayer
 };
-L.control.layers(baseLayers, overlays).addTo(map);
 
+// Control de capas siempre visible
+L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: false }).addTo(map);
+
+// Cargar datos CSV
 let refugiosData = {};
 Papa.parse("refugios.csv", {
   download: true,
@@ -38,6 +48,7 @@ Papa.parse("refugios.csv", {
   }
 });
 
+// Cargar refugios.geojson y unir con CSV
 function cargarGeojsonRefugios() {
   fetch("refugios.geojson")
     .then(res => res.json())
@@ -65,6 +76,7 @@ function cargarGeojsonRefugios() {
     });
 }
 
+// Cargar polígono CIP
 fetch("cip_aca_coy.geojson")
   .then(res => res.json())
   .then(data => {
