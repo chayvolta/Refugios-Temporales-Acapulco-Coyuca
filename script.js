@@ -1,4 +1,3 @@
-
 const map = L.map('map').setView([16.85, -99.9], 10);
 
 // Capas base
@@ -19,18 +18,19 @@ const iconRefugio = L.icon({
   iconSize: [25, 25]
 });
 
+// Capas temáticas
 const refugiosLayer = L.layerGroup().addTo(map);
 const cipLayer = L.layerGroup().addTo(map);
 
+// Controles de capas
 const overlays = {
   "Refugios temporales": refugiosLayer,
   "Delimitación CIP Acapulco-Coyuca": cipLayer
 };
 L.control.layers(baseLayers, overlays).addTo(map);
 
+// Cargar CSV de refugios
 let refugiosData = {};
-
-// Cargar CSV
 Papa.parse("refugios.csv", {
   download: true,
   header: true,
@@ -38,11 +38,12 @@ Papa.parse("refugios.csv", {
     results.data.forEach(row => {
       refugiosData[row.CLV] = row;
     });
-    cargarGeojson();
+    cargarGeojsonRefugios();
   }
 });
 
-function cargarGeojson() {
+// Cargar puntos GeoJSON y unir con CSV
+function cargarGeojsonRefugios() {
   fetch("refugios.geojson")
     .then(res => res.json())
     .then(geojson => {
@@ -53,16 +54,16 @@ function cargarGeojson() {
           const marker = L.marker(latlng, { icon: iconRefugio });
 
           if (props) {
-            const popup = \`
-              <strong>\${props.Nombre}</strong><br>
-              <b>Dirección:</b> \${props["Dirección"]}<br>
-              <b>Capacidad personas:</b> \${props["Capacidad de personas"]}<br>
-              <b>Capacidad familias:</b> \${props["Capacidad de familias"]}<br>
-              <b>Municipio:</b> \${props["Municipio"]}
-            \`;
+            const popup = `
+              <strong>${props.Nombre}</strong><br>
+              <b>Dirección:</b> ${props["Dirección"]}<br>
+              <b>Capacidad personas:</b> ${props["Capacidad de personas"]}<br>
+              <b>Capacidad familias:</b> ${props["Capacidad de familias"]}<br>
+              <b>Municipio:</b> ${props["Municipio"]}
+            `;
             marker.bindPopup(popup);
           } else {
-            marker.bindPopup("CLAVE sin información: " + clave);
+            marker.bindPopup("Refugio sin datos CSV: " + clave);
           }
 
           return marker;
