@@ -1,35 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ubicación de refugios temporales Acapulco - Coyuca</title>
+  <title>Refugios Temporales Acapulco - Coyuca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <!-- Estilo personalizado -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+  <!-- Fuente Noto Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="header">
+
+  <header>
     <h1>Ubicación de refugios temporales Acapulco - Coyuca</h1>
-    <div id="subtitle">
+    <p>
       Fuente: Catálogo de refugios temporales 2025. Coordinación General de Protección Civil y Bomberos Acapulco, 2025;
-      Catálogo de refugios temporales 2025. Gobierno de Coyuca de Benítez 2024-2027;
-      y Catálogo de refugios temporales 2025. Secretaría de Gestión Integral de Riesgos y Protección Civil Guerrero, 2025.
-      <br>
-      Recuperado de:
-      <a href="https://acapulco.gob.mx/wp-content/uploads/2025/04/Refugios_Temporales_2025.pdf" target="_blank">[1]</a>,
-      <a href="https://www.facebook.com/photo/?fbid=122159397968563471&set=a.122093539370563471" target="_blank">[2]</a>,
-      <a href="https://www.guerrero.gob.mx/wp-content/uploads/2025/05/RT-SGIRPCGRO-2025.pdf" target="_blank">[3]</a>
-    </div>
-  </div>
+      Catálogo de refugios temporales 2025. Gobierno de Coyuca de Benítez 2024-2027; y Catálogo de refugios temporales
+      2025. Secretaría de Gestión Integral de Riesgos y Protección Civil Guerrero, 2025.
+      Recuperado de: <br>
+      https://acapulco.gob.mx/wp-content/uploads/2025/04/Refugios_Temporales_2025.pdf, <br>
+      https://www.facebook.com/photo/?fbid=122159397968563471&set=a.122093539370563471, <br>
+      https://www.guerrero.gob.mx/wp-content/uploads/2025/05/RT-SGIRPCGRO-2025.pdf
+    </p>
+  </header>
 
   <div id="map"></div>
 
-  <div id="footer-img">
-    <img src="footer.png" alt="Footer institucional">
-  </div>
+  <footer>
+    <img src="Recurso-3Footer_1920_SINAPROC.png" alt="Footer Institucional">
+  </footer>
 
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- PapaParse para CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Script personalizado -->
   <script src="script.js"></script>
 </body>
 </html>
