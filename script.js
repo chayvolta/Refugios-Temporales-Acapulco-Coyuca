@@ -1,32 +1,25 @@
 
-const map = L.map('map').setView([16.85, -99.9], 10);
+const cipLayer = L.layerGroup();
+const refugiosLayer = L.layerGroup();
 
-// Capas base con etiquetas
+const satelliteWithLabels = L.layerGroup([
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri'
+  })
+]);
+
+const map = L.map('map', {
+  layers: [satelliteWithLabels, refugiosLayer, cipLayer]
+});
+
 const baseLayers = {
-  "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }),
-  "Satélite + etiquetas": L.layerGroup([
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles © Esri'
-    })
-  ]),
+  "Satelital": satelliteWithLabels,
+  "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
   "Oscuro": L.tileLayer('https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CartoDB'
   })
 };
-
-baseLayers["OpenStreetMap"].addTo(map);
-
-// Icono personalizado
-const iconRefugio = L.icon({
-  iconUrl: 'family.svg',
-  iconSize: [25, 25]
-});
-
-const refugiosLayer = L.layerGroup().addTo(map);
-const cipLayer = L.layerGroup().addTo(map);
 
 const overlays = {
   "Refugios temporales": refugiosLayer,
@@ -35,7 +28,13 @@ const overlays = {
 
 L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: false }).addTo(map);
 
-// Cargar datos CSV
+// Icono personalizado naranja (#ff6600)
+const iconRefugio = L.icon({
+  iconUrl: 'family.svg',
+  iconSize: [25, 25],
+  className: 'orange-icon' // clase CSS si se desea ajustar más adelante
+});
+
 let refugiosData = {};
 Papa.parse("refugios.csv", {
   download: true,
@@ -75,11 +74,11 @@ function cargarGeojsonRefugios() {
     });
 }
 
-// Cargar polígono CIP
+// Cargar capa CIP y ajustar vista al área
 fetch("cip_aca_coy.geojson")
   .then(res => res.json())
   .then(data => {
-    L.geoJSON(data, {
+    const capa = L.geoJSON(data, {
       style: {
         color: "#611232",
         weight: 2,
@@ -87,4 +86,5 @@ fetch("cip_aca_coy.geojson")
         fillOpacity: 0.5
       }
     }).addTo(cipLayer);
+    map.fitBounds(capa.getBounds());
   });
