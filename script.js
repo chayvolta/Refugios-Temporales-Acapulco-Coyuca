@@ -26,7 +26,7 @@ const overlays = {
   "Delimitación CIP Acapulco-Coyuca": cipLayer
 };
 
-L.control.layers(baseLayers, overlays, { position: 'toleft', collapsed: false }).addTo(map);
+L.control.layers(baseLayers, overlays, { position: 'topleft', collapsed: false }).addTo(map);
 
 let refugiosData = {};
 Papa.parse("refugios.csv", {
