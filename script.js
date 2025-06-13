@@ -1,3 +1,12 @@
+const map = L.map('map').setView([16.85, -99.9], 11);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+let refugiosInfo = {};
+
+// ✅ Cargar el CSV desde GitHub directamente
 Papa.parse("https://raw.githubusercontent.com/chayvolta/Refugios-Temporales-Acapulco-Coyuca/main/refugios.csv", {
   download: true,
   header: true,
@@ -10,6 +19,7 @@ Papa.parse("https://raw.githubusercontent.com/chayvolta/Refugios-Temporales-Acap
 });
 
 function cargarGeojson() {
+  // ✅ Cargar el GeoJSON desde GitHub directamente
   fetch("https://raw.githubusercontent.com/chayvolta/Refugios-Temporales-Acapulco-Coyuca/main/refugios.geojson")
     .then(res => res.json())
     .then(geojson => {
