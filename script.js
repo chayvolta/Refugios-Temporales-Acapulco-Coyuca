@@ -48,6 +48,11 @@ function cargarGeojsonRefugios() {
         pointToLayer: function(feature, latlng) {
           const clave = feature.properties.CLAVE;
           const props = refugiosData[clave];
+
+          if (!props) {
+            return null; // ⛔ Ignora puntos sin datos CSV
+          }
+
           const marker = L.circleMarker(latlng, {
             radius: 6,
             fillColor: "#ff6600",
@@ -57,18 +62,13 @@ function cargarGeojsonRefugios() {
             fillOpacity: 0.8
           });
 
-          if (props) {
-            const popup = "<strong>" + props.Nombre + "</strong><br>" +
-                          "<b>Dirección:</b> " + props["Dirección"] + "<br>" +
-                          "<b>Capacidad personas:</b> " + props["Capacidad de personas"] + "<br>" +
-                          "<b>Capacidad familias:</b> " + props["Capacidad de familias"] + "<br>" +
-                          "<b>Municipio:</b> " + props["Municipio"] + "<br>" +
-                          '<b>Ubicación:</b> <a href="' + props["Ubicación"] + '" target="_blank">Ver en mapa</a>';
-            marker.bindPopup(popup);
-          } else {
-            marker.bindPopup("Refugio sin datos CSV: " + clave);
-          }
-
+          const popup = "<strong>" + props.Nombre + "</strong><br>" +
+                        "<b>Dirección:</b> " + props["Dirección"] + "<br>" +
+                        "<b>Capacidad personas:</b> " + props["Capacidad de personas"] + "<br>" +
+                        "<b>Capacidad familias:</b> " + props["Capacidad de familias"] + "<br>" +
+                        "<b>Municipio:</b> " + props["Municipio"] + "<br>" +
+                        '<b>Ubicación:</b> <a href="' + props["Ubicación"] + '" target="_blank">Ver en mapa</a>';
+          marker.bindPopup(popup);
           return marker;
         }
       }).addTo(refugiosLayer);
