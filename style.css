@@ -10,26 +10,26 @@ body {
 header {
   background-color: #002f2a;
   color: white;
-  padding: 12px 20px;
+  padding: 10px 20px;
   text-align: center;
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.5em;
-  font-weight: 700; /* bold */
+  font-size: 1.4em;
+  font-weight: 700; /* Noto Sans bold */
 }
 
 header p {
-  font-size: 0.95em;
-  font-weight: 400;
-  margin-top: 6px;
-  font-family: 'Noto Sans', sans-serif;
+  font-size: 0.9em;
+  font-weight: 400; /* Noto Sans regular */
+  margin-top: 5px;
+  line-height: 1.4;
 }
 
 #map {
   width: 100%;
-  height: calc(100vh - 180px); /* dejar espacio para encabezado + footer */
+  height: calc(100vh - 190px); /* espacio suficiente para encabezado y footer */
   z-index: 1;
 }
 
