@@ -28,13 +28,6 @@ const overlays = {
 
 L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: false }).addTo(map);
 
-// Icono personalizado naranja (#ff6600)
-const iconRefugio = L.icon({
-  iconUrl: 'family.svg',
-  iconSize: [25, 25],
-  className: 'orange-icon' // clase CSS si se desea ajustar más adelante
-});
-
 let refugiosData = {};
 Papa.parse("refugios.csv", {
   download: true,
@@ -55,7 +48,14 @@ function cargarGeojsonRefugios() {
         pointToLayer: function(feature, latlng) {
           const clave = feature.properties.CLAVE;
           const props = refugiosData[clave];
-          const marker = L.marker(latlng, { icon: iconRefugio });
+          const marker = L.circleMarker(latlng, {
+            radius: 6,
+            fillColor: "#ff6600",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          });
 
           if (props) {
             const popup = "<strong>" + props.Nombre + "</strong><br>" +
@@ -74,7 +74,6 @@ function cargarGeojsonRefugios() {
     });
 }
 
-// Cargar capa CIP y ajustar vista al área
 fetch("cip_aca_coy.geojson")
   .then(res => res.json())
   .then(data => {
