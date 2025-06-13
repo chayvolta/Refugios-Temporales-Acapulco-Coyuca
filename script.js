@@ -11,16 +11,7 @@ const baseLayers = {
     attribution: '&copy; Stadia Maps'
   })
 };
-
 baseLayers["OpenStreetMap"].addTo(map);
-
-// Control de capas (visibilidad)
-const overlays = {};
-const refugiosLayerGroup = L.layerGroup().addTo(map);
-const cipLayer = L.layerGroup().addTo(map);
-overlays["Refugios temporales"] = refugiosLayerGroup;
-overlays["Delimitación CIP Acapulco-Coyuca"] = cipLayer;
-L.control.layers(baseLayers, overlays).addTo(map);
 
 // Icono personalizado
 const iconRefugio = L.icon({
@@ -28,8 +19,16 @@ const iconRefugio = L.icon({
   iconSize: [25, 25]
 });
 
+const refugiosLayer = L.layerGroup().addTo(map);
+const cipLayer = L.layerGroup().addTo(map);
+
+const overlays = {
+  "Refugios temporales": refugiosLayer,
+  "Delimitación CIP Acapulco-Coyuca": cipLayer
+};
+L.control.layers(baseLayers, overlays).addTo(map);
+
 let refugiosData = {};
-let markers = [];
 
 // Cargar CSV
 Papa.parse("refugios.csv", {
@@ -43,19 +42,15 @@ Papa.parse("refugios.csv", {
   }
 });
 
-// Cargar GeoJSON puntos
 function cargarGeojson() {
   fetch("refugios.geojson")
     .then(res => res.json())
     .then(geojson => {
-      refugiosLayerGroup.clearLayers();
-      markers = [];
-
       L.geoJSON(geojson, {
         pointToLayer: function(feature, latlng) {
           const clave = feature.properties.CLAVE;
           const props = refugiosData[clave];
-          let marker = L.marker(latlng, { icon: iconRefugio });
+          const marker = L.marker(latlng, { icon: iconRefugio });
 
           if (props) {
             const popup = \`
@@ -66,15 +61,13 @@ function cargarGeojson() {
               <b>Municipio:</b> \${props["Municipio"]}
             \`;
             marker.bindPopup(popup);
-            marker.feature = { properties: props };  // guardar referencia
-            markers.push(marker);
+          } else {
+            marker.bindPopup("CLAVE sin información: " + clave);
           }
+
           return marker;
         }
-      }).addTo(refugiosLayerGroup);
-
-      llenarMunicipios();
-      actualizarListado();
+      }).addTo(refugiosLayer);
     });
 }
 
@@ -91,54 +84,3 @@ fetch("cip_aca_coy.geojson")
       }
     }).addTo(cipLayer);
   });
-
-// Filtros y búsqueda
-document.getElementById("searchBox").addEventListener("input", actualizarListado);
-document.getElementById("municipioFilter").addEventListener("change", actualizarListado);
-document.getElementById("capMin").addEventListener("input", actualizarListado);
-document.getElementById("capMax").addEventListener("input", actualizarListado);
-
-function llenarMunicipios() {
-  const select = document.getElementById("municipioFilter");
-  const municipios = [...new Set(Object.values(refugiosData).map(d => d.Municipio))];
-  select.innerHTML = '<option value="">Todos</option>';
-  municipios.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = m;
-    select.appendChild(opt);
-  });
-}
-
-function actualizarListado() {
-  const lista = document.getElementById("refugioList");
-  const busqueda = document.getElementById("searchBox").value.toLowerCase();
-  const muni = document.getElementById("municipioFilter").value;
-  const capMin = parseInt(document.getElementById("capMin").value) || 0;
-  const capMax = parseInt(document.getElementById("capMax").value) || Infinity;
-
-  lista.innerHTML = "";
-
-  markers.forEach(marker => {
-    const p = marker.feature.properties;
-    if (!p) return;
-
-    const nombre = p.Nombre.toLowerCase();
-    const muniOK = !muni || p.Municipio === muni;
-    const cap = parseInt(p["Capacidad de personas"]) || 0;
-    const capOK = cap >= capMin && cap <= capMax;
-    const match = nombre.includes(busqueda) && muniOK && capOK;
-
-    marker.setOpacity(match ? 1 : 0);
-    if (match) {
-      const li = document.createElement("li");
-      li.textContent = p.Nombre;
-      li.style.cursor = "pointer";
-      li.onclick = () => {
-        map.setView(marker.getLatLng(), 14);
-        marker.openPopup();
-      };
-      lista.appendChild(li);
-    }
-  });
-}
