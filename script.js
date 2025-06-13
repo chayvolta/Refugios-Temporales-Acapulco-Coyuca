@@ -63,7 +63,7 @@ function cargarGeojsonRefugios() {
                           "<b>Capacidad personas:</b> " + props["Capacidad de personas"] + "<br>" +
                           "<b>Capacidad familias:</b> " + props["Capacidad de familias"] + "<br>" +
                           "<b>Municipio:</b> " + props["Municipio"] + "<br>" +
-                          "<b>Ubicación:</b> " + props["Ubicación"];
+                          '<b>Ubicación:</b> <a href="' + props["Ubicación"] + '" target="_blank">Ver en mapa</a>';
             marker.bindPopup(popup);
           } else {
             marker.bindPopup("Refugio sin datos CSV: " + clave);
