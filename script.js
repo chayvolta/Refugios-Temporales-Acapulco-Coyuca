@@ -1,12 +1,4 @@
-const map = L.map('map').setView([16.85, -99.9], 11);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-let refugiosInfo = {};
-
-Papa.parse("refugios.csv", {
+Papa.parse("https://raw.githubusercontent.com/chayvolta/Refugios-Temporales-Acapulco-Coyuca/main/refugios.csv", {
   download: true,
   header: true,
   complete: function(results) {
@@ -18,12 +10,20 @@ Papa.parse("refugios.csv", {
 });
 
 function cargarGeojson() {
-  fetch("refugios.geojson")
+  fetch("https://raw.githubusercontent.com/chayvolta/Refugios-Temporales-Acapulco-Coyuca/main/refugios.geojson")
     .then(res => res.json())
     .then(geojson => {
       L.geoJSON(geojson, {
         onEachFeature: function(feature, layer) {
-          const props = refugiosInfo[feature.properties.CLAVE];
+          const clave = feature.properties.CLAVE;
+          const props = refugiosInfo[clave];
+
+          if (!props) {
+            console.warn("No se encontró información para:", clave);
+            layer.bindPopup("Refugio sin información adicional. CLAVE: " + clave);
+            return;
+          }
+
           let popupContent = `<strong>${props.Nombre}</strong><br>`;
           popupContent += `<b>Dirección:</b> ${props["Dirección"]}<br>`;
           popupContent += `<b>Capacidad personas:</b> ${props["Capacidad de personas"]}<br>`;
