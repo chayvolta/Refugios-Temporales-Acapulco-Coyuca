@@ -1,5 +1,3 @@
-
-const cipLayer = L.layerGroup();
 const refugiosLayer = L.layerGroup();
 
 const satelliteWithLabels = L.layerGroup([
@@ -10,23 +8,11 @@ const satelliteWithLabels = L.layerGroup([
 ]);
 
 const map = L.map('map', {
-  layers: [satelliteWithLabels, refugiosLayer, cipLayer]
+  layers: [satelliteWithLabels, refugiosLayer]
 });
 
-const baseLayers = {
-  "Satelital": satelliteWithLabels,
-  "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
-  "Oscuro": L.tileLayer('https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; CartoDB'
-  })
-};
-
-const overlays = {
-  "Refugios temporales": refugiosLayer,
-  "Delimitación CIP Acapulco-Coyuca": cipLayer
-};
-
-L.control.layers(baseLayers, overlays, { position: 'topleft', collapsed: false }).addTo(map);
+// 🚫 Eliminado el control de capas (L.control.layers)
+// 🚫 Eliminadas las definiciones de baseLayers y overlays
 
 let refugiosData = {};
 Papa.parse("refugios.csv", {
@@ -44,7 +30,7 @@ function cargarGeojsonRefugios() {
   fetch("refugios.geojson")
     .then(res => res.json())
     .then(geojson => {
-      L.geoJSON(geojson, {
+      const capaRefugios = L.geoJSON(geojson, {
         pointToLayer: function(feature, latlng) {
           const clave = feature.properties.CLAVE;
           const props = refugiosData[clave];
@@ -72,19 +58,8 @@ function cargarGeojsonRefugios() {
           return marker;
         }
       }).addTo(refugiosLayer);
+
+      // ✅ Zoom automático a la capa de refugios
+      map.fitBounds(capaRefugios.getBounds());
     });
 }
-
-fetch("cip_aca_coy.geojson")
-  .then(res => res.json())
-  .then(data => {
-    const capa = L.geoJSON(data, {
-      style: {
-        color: "#611232",
-        weight: 2,
-        fillColor: "#611232",
-        fillOpacity: 0.5
-      }
-    }).addTo(cipLayer);
-    map.fitBounds(capa.getBounds());
-  });
